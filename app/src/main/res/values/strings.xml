@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Art Space app</string>
+    <string name="alenushka_title">Аленушка</string>
+    <string name="alenushka_author">Виктор Васнецов</string>
+    <string name="alenushka_year">1881</string>
+
+    <string name="tarakanova_title">Княжна Тараканова</string>
+    <string name="tarakanova_author">Константин Флавицкий</string>
+    <string name="tarakanova_year">1864</string>
+
+    <string name="horse_woman_title">Всадница</string>
+    <string name="horse_woman_author">Карл Брюллов</string>
+    <string name="horse_woman_year">1832</string>
+
+
+</resources>
