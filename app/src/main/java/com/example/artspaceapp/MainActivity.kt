@@ -3,7 +3,10 @@ package com.example.artspaceapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,11 +16,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,9 +57,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ArtScreen() {
+    var screen: Screen by remember { mutableStateOf(Screen.HorseWoman) }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp)
+            .scrollable(orientation = Orientation.Horizontal, state = rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
         Surface(
             tonalElevation = 12.dp,
@@ -59,48 +73,93 @@ fun ArtScreen() {
             shadowElevation = 12.dp
         ) {
             Image(
-                painterResource(R.drawable.horse_woman),
+                painterResource(screen.currentArtWork.imageId),
                 contentDescription = "test",
                 modifier = Modifier.padding(20.dp)
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            stringResource(R.string.horse_woman_title),
+            stringResource(screen.currentArtWork.titleId),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.Center) {
-            Text(
-                stringResource(R.string.horse_woman_author),
-                fontSize = 16.sp
-            )
-            Text(
-                buildAnnotatedString {
+        TitleAndAuthorInformation(
+            authorLabel = screen.currentArtWork.authorId,
+            yearLabel = screen.currentArtWork.yearId
+        )
+    }
+    PrevAndNextButtons(
+        onClickPrev = { screen = getPrevScreen(screen) },
+        onClickNext = { screen = getNextScreen(screen) }
+    )
+}
+
+
+fun getPrevScreen(currentScreen: Screen): Screen{
+    if(currentScreen is Screen.HorseWoman)
+        return Screen.Tarakanova
+
+    if(currentScreen is Screen.Tarakanova)
+        return Screen.Alenushka
+
+    return Screen.HorseWoman
+}
+
+fun getNextScreen(currentScreen: Screen): Screen{
+    if(currentScreen is Screen.HorseWoman)
+        return Screen.Alenushka
+
+    if(currentScreen is Screen.Alenushka)
+        return Screen.Tarakanova
+
+    return Screen.HorseWoman
+}
+
+@Composable
+fun TitleAndAuthorInformation(
+    @StringRes authorLabel: Int,
+    @StringRes yearLabel: Int
+){
+    Row(horizontalArrangement = Arrangement.Center) {
+        Text(
+            stringResource(authorLabel),
+            fontSize = 16.sp
+        )
+        Text(
+            buildAnnotatedString {
                 append(" ")
                 append("(")
-                append(stringResource(R.string.horse_woman_year))
+                append(stringResource(yearLabel))
                 append(")")
-                },
-                fontSize = 16.sp
-            )
-        }
+            },
+            fontSize = 16.sp
+        )
     }
+}
+
+@Composable
+fun PrevAndNextButtons(
+    onClickPrev: () -> Unit,
+    onClickNext:() -> Unit
+){
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Center
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onClickPrev,
             modifier = Modifier.weight(0.5f)
         ) {
             Text("Previous")
         }
         Spacer(modifier = Modifier.width(20.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onClickNext,
             modifier = Modifier.weight(0.5f)
         ) {
             Text("Next")
